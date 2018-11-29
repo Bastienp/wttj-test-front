@@ -1,12 +1,14 @@
 export const users = [
     {
-        name: "Jobs",
-        username: "Steve",
-        email: "steve@jobs.com"
+        lastname: "Jobs",
+        firstname: "Steve",
+        email: "steve@jobs.com",
+        step: "to_meet",
     },
     {
-        name: "Poidevain",
-        username: "Bastien",
-        email: "bastien@poidevain.com"
+        lastname: "Poidevain",
+        firstname: "Bastien",
+        email: "bastien@poidevain.com",
+        step: "interview"
     },
 ];

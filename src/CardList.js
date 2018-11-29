@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import Card from "./Card";
-import {users} from "./fixtures/users";
+import './CardList.css';
 
-
-Card.propTypes = {
-    name: PropTypes.string.isRequired
-};
-
-const CardList = ({cardList}) => (
-    <div>
-        {cardList.name}
+const CardList = ({users, name}) => (
+    <div className="cardList">
+        {name}
         {users.map((user) => (
-            <Card user={user} />
+            <Card firstname={user.firstname} step={user.step} />
         ))}
     </div>
 );
+CardList.propTypes = {
+    users: PropTypes.array.isRequired,
+    name: PropTypes.string.isRequired,
+};
 
 export default CardList;
