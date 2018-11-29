@@ -17,7 +17,7 @@ class App extends Component {
     return (
         <div>
             {cardLists.map((cardList) => (
-                <CardList users={filterUsersByStep(cardList.step)} name={cardList.name} step={cardList.step} />
+                <CardList users={filterUsersByStep(cardList.step)} name={cardList.name} key={cardList.id} />
             ))}
         </div>
     );

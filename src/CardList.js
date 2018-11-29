@@ -7,7 +7,7 @@ const CardList = ({users, name}) => (
     <div className="cardList">
         {name}
         {users.map((user) => (
-            <Card firstname={user.firstname} step={user.step} />
+            <Card firstname={user.firstname} step={user.step} key={user.id} />
         ))}
     </div>
 );
