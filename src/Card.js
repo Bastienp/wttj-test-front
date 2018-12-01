@@ -5,10 +5,11 @@ import {Draggable} from "react-beautiful-dnd";
 
 
 
-const Card = ({firstname, id}) => (
+const Card = ({firstname, id, index}) => (
     <Draggable
-        index={id}
-        draggableId={id}>
+        key={id}
+        draggableId={id}
+        index={index}>
         {(provided, snapshot) => (
             <div
                 ref={provided.innerRef}
