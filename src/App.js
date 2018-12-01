@@ -2,29 +2,22 @@ import React, { Component } from 'react';
 import './App.css';
 import CardList from "./CardList";
 import {cardLists} from "./fixtures/cardLists";
-import {users} from "./fixtures/users";
 import {DragDropContext} from "react-beautiful-dnd";
-
-function filterUsersByStep(step) {
-    return users.filter( user =>
-        user.step === step
-
-    );
-}
+import axios from 'axios';
 
 const isDraggableMoved = (destination, source) => {
-    let moved = (destination.droppableId === source.droppableId && destination.index === source.index) ? false : true;
-    return moved
+    return (!(destination.droppableId === source.droppableId && destination.index === source.index));
+
 };
 
-const orderList = (newList, cardMoving, sourceIndex, destinationIndex) => {
-    newList.splice(sourceIndex, 1);
+const orderList = (newList, sourceIndex, destinationIndex) => {
+    const [cardMoving] = newList.splice(sourceIndex, 1);
     newList.splice(destinationIndex, 0, cardMoving);
     return newList
 };
 
-const moveBetweenList = (newSource, newDestination, cardMoving, droppableSource, droppableDestination) => {
-    newSource.splice(droppableSource.index, 1);
+const moveBetweenList = (newSource, newDestination, droppableSource, droppableDestination) => {
+    const [cardMoving] = newSource.splice(droppableSource.index, 1);
     newDestination.splice(droppableDestination.index, 0, cardMoving);
     const newLists = {};
     newLists[droppableSource.droppableId] = newSource;
@@ -35,9 +28,20 @@ const moveBetweenList = (newSource, newDestination, cardMoving, droppableSource,
 
 class App extends Component {
 
+    componentDidMount() {
+        axios.get('http://localhost:3001/users')
+            .then(response => {
+                this.setState({
+                    to_meet: response.data.filter(user => user.list_id === 1),
+                    interview: response.data.filter(user => user.list_id === 2)
+                })
+            })
+            .catch(error => console.log(error))
+    }
+
     state = {
-        to_meet: filterUsersByStep("to_meet"),
-        interview: filterUsersByStep("interview"),
+        to_meet: [],
+        interview: [],
     };
 
     onDragEnd = result => {
@@ -53,7 +57,6 @@ class App extends Component {
         if (source.droppableId === destination.droppableId) {
             const newCardsList = orderList(
                 Array.from(this.state[source.droppableId]),
-                users.find(user => user.id === draggableId),
                 source.index,
                 destination.index
             );
@@ -71,7 +74,6 @@ class App extends Component {
             const newLists = moveBetweenList(
                 Array.from(this.state[source.droppableId]),
                 Array.from(this.state[destination.droppableId]),
-                users.find(user => user.id === draggableId),
                 source,
                 destination
             );
