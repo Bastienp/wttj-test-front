@@ -12,7 +12,17 @@ function filterUsersByStep(step) {
     );
 }
 
+const isDraggableMoved = (destination, source) => {
+    let moved = (destination.droppableId === source.droppableId && destination.index === source.index) ? false : true;
+    return moved
+};
 
+const orderList = (newList, cardMoving, sourceIndex, destinationIndex) => {
+    newList.splice(sourceIndex, 1);
+    newList.splice(destinationIndex, 0, cardMoving);
+    return newList
+
+};
 
 class App extends Component {
 
@@ -27,14 +37,17 @@ class App extends Component {
             return;
         }
 
-        if (destination.droppableId === source.droppableId && destination.index === source.index) {
+
+        if (!isDraggableMoved(destination, source)) {
             return;
         }
 
-        const cardMoving = users.find(user => user.id === draggableId);
-        const newCardsList = Array.from(this.state[source.droppableId]);
-        newCardsList.splice(source.index, 1);
-        newCardsList.splice(destination.index, 0, cardMoving);
+        const newCardsList = orderList(
+            Array.from(this.state[source.droppableId]),
+            users.find(user => user.id === draggableId),
+            source.index,
+            destination.index
+        );
 
         let state = {};
         if (source.droppableId === 'interview') {
