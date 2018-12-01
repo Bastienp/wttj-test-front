@@ -80,19 +80,33 @@ class App extends Component {
             this.setState({
                 to_meet: newLists.to_meet,
                 interview: newLists.interview
+            });
+
+            axios.put('http://localhost:3001/users/' + draggableId, {
+                user: {
+                    list_id: cardLists.find(cardList => cardList.step === destination.droppableId).id
+                }
             })
+                .then(response => {
+                    this.setState({
+                        to_meet: response.data.filter(user => user.list_id === 1),
+                        interview: response.data.filter(user => user.list_id === 2)
+                    })
+                })
+                .catch(error => console.log(error))
+
         }
     };
 
-  render() {
-    return (
-        <DragDropContext onDragEnd={this.onDragEnd}>
-            {cardLists.map((cardList) => (
-                <CardList users={this.state[cardList.step]} name={cardList.name} step={cardList.step} key={cardList.id} />
-            ))}
-        </DragDropContext>
-    );
-  }
+    render() {
+        return (
+            <DragDropContext onDragEnd={this.onDragEnd}>
+                {cardLists.map((cardList) => (
+                    <CardList users={this.state[cardList.step]} name={cardList.name} step={cardList.step} id={cardList.id} key={cardList.id} />
+                ))}
+            </DragDropContext>
+        );
+    }
 }
 
 export default App;
