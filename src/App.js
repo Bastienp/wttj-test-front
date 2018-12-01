@@ -21,7 +21,16 @@ const orderList = (newList, cardMoving, sourceIndex, destinationIndex) => {
     newList.splice(sourceIndex, 1);
     newList.splice(destinationIndex, 0, cardMoving);
     return newList
+};
 
+const moveBetweenList = (newSource, newDestination, cardMoving, droppableSource, droppableDestination) => {
+    newSource.splice(droppableSource.index, 1);
+    newDestination.splice(droppableDestination.index, 0, cardMoving);
+    const newLists = {};
+    newLists[droppableSource.droppableId] = newSource;
+    newLists[droppableDestination.droppableId] = newDestination;
+
+    return newLists;
 };
 
 class App extends Component {
@@ -37,27 +46,40 @@ class App extends Component {
             return;
         }
 
-
         if (!isDraggableMoved(destination, source)) {
             return;
         }
 
-        const newCardsList = orderList(
-            Array.from(this.state[source.droppableId]),
-            users.find(user => user.id === draggableId),
-            source.index,
-            destination.index
-        );
+        if (source.droppableId === destination.droppableId) {
+            const newCardsList = orderList(
+                Array.from(this.state[source.droppableId]),
+                users.find(user => user.id === draggableId),
+                source.index,
+                destination.index
+            );
 
-        let state = {};
-        if (source.droppableId === 'interview') {
-            state = {interview: newCardsList };
-        }
-        if (source.droppableId === 'to_meet') {
-            state = {to_meet: newCardsList}
-        }
+            let state = {};
+            if (source.droppableId === 'interview') {
+                state = {interview: newCardsList };
+            }
+            if (source.droppableId === 'to_meet') {
+                state = {to_meet: newCardsList}
+            }
 
-        this.setState(state)
+            this.setState(state)
+        } else {
+            const newLists = moveBetweenList(
+                Array.from(this.state[source.droppableId]),
+                Array.from(this.state[destination.droppableId]),
+                users.find(user => user.id === draggableId),
+                source,
+                destination
+            );
+            this.setState({
+                to_meet: newLists.to_meet,
+                interview: newLists.interview
+            })
+        }
     };
 
   render() {
