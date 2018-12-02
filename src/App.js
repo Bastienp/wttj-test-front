@@ -112,7 +112,8 @@ class App extends Component {
 
             axios.put('http://localhost:3001/users/' + draggableId, {
                 user: {
-                    list_id: cardLists.find(cardList => cardList.step === destination.droppableId).id
+                    list_id: cardLists.find(cardList => cardList.step === destination.droppableId).id,
+                    list_users: newLists[destination.droppableId]
                 }
             })
                 .then(response => {
