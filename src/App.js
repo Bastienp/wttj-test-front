@@ -4,6 +4,8 @@ import CardList from "./CardList";
 import {cardLists} from "./fixtures/cardLists";
 import {DragDropContext} from "react-beautiful-dnd";
 import axios from 'axios';
+import Cable from "actioncable";
+
 
 const isDraggableMoved = (destination, source) => {
     return (!(destination.droppableId === source.droppableId && destination.index === source.index));
@@ -27,14 +29,27 @@ const moveBetweenList = (newSource, newDestination, droppableSource, droppableDe
 };
 
 class App extends Component {
+    setStateOnUpdate(users) {
+        this.setState({
+            to_meet: users.filter(user => user.list_id === 1),
+            interview: users.filter(user => user.list_id === 2)
+        })
+    }
+    componentWillMount() {
+        let cable = Cable.createConsumer('http://localhost:3001/cable');
+
+        cable.subscriptions.create({channel: "BoardsChannel"}, {
+            connect: () => { },
+            received: (response) => {
+                this.setStateOnUpdate(response.users)
+            }
+        })
+    }
 
     componentDidMount() {
         axios.get('http://localhost:3001/users')
             .then(response => {
-                this.setState({
-                    to_meet: response.data.filter(user => user.list_id === 1),
-                    interview: response.data.filter(user => user.list_id === 2)
-                })
+                this.setStateOnUpdate(response.data)
             })
             .catch(error => console.log(error))
     }
