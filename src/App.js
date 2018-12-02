@@ -92,9 +92,9 @@ class App extends Component {
             if (source.droppableId === 'to_meet') {
                 state = {to_meet: newCardsList}
             }
-            const newUsersOrder = newCardsList;
+            const users = newCardsList;
             axios.put('http://localhost:3001/users_positions', {
-                newUsersOrder
+                users
             });
 
             this.setState(state)
