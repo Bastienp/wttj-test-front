@@ -51,10 +51,19 @@ class App extends Component {
             .then(response => {
                 this.setStateOnUpdate(response.data)
             })
-            .catch(error => console.log(error))
+            .catch(error => console.log(error));
+
+        axios.get('http://localhost:3001/lists')
+            .then(response => {
+                this.setState({
+                    cardLists: response.data
+                })
+            })
+            .catch(error => console.log(error));
     }
 
     state = {
+        cardLists: [],
         to_meet: [],
         interview: [],
     };
@@ -116,8 +125,8 @@ class App extends Component {
     render() {
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
-                {cardLists.map((cardList) => (
-                    <CardList users={this.state[cardList.step]} name={cardList.name} step={cardList.step} id={cardList.id} key={cardList.id} />
+                {this.state.cardLists.map((cardList) => (
+                    <CardList users={this.state[cardList.step]} name={cardList.title} step={cardList.step} id={cardList.id} key={cardList.id} />
                 ))}
             </DragDropContext>
         );
