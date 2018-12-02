@@ -5,7 +5,7 @@ import {Draggable} from "react-beautiful-dnd";
 
 
 
-const Card = ({firstname, id, index}) => (
+const Card = ({firstname, lastname, job, id, index}) => (
     <Draggable
         key={id}
         draggableId={id}
@@ -16,7 +16,8 @@ const Card = ({firstname, id, index}) => (
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
                 className='card'>
-                {firstname}
+                {firstname} {lastname}
+                <div className='job'>{job}</div>
             </div>
         )}
 

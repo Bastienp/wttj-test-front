@@ -1,6 +1,12 @@
 
 .cardList {
-  background: lightgrey;
+  background: white;
   display: inline-block;
-  margin: 50px;
+  margin: 10px;
+  height: 500px;
+}
+
+.cardListHeader{
+  height: 30px;
+  border-bottom: 1px solid black;
 }

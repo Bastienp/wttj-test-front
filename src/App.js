@@ -130,9 +130,12 @@ class App extends Component {
     render() {
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
-                {this.state.cardLists.map((cardList) => (
-                    <CardList users={this.state[cardList.step]} name={cardList.title} step={cardList.step} id={cardList.id} key={cardList.id} />
-                ))}
+                <div className="board">
+                    {this.state.cardLists.map((cardList) => (
+                        <CardList users={this.state[cardList.step]} name={cardList.title} step={cardList.step} id={cardList.id} key={cardList.id} />
+                    ))}
+                </div>
+
             </DragDropContext>
         );
     }

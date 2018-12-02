@@ -10,9 +10,11 @@ const CardList = ({users, name, step}) => (
             <div
                 ref={provided.innerRef}
                 className="cardList">
-                {name}
+                <div className="cardListHeader">
+                    {name} {users.length}
+                </div>
                 {users.map((user, index) => (
-                    <Card firstname={user.firstname} step={user.step} id={user.id} key={user.id} index={index} />
+                    <Card firstname={user.firstname} lastname={user.lastname} job={user.job} step={user.step} id={user.id} key={user.id} index={index} />
                 ))}
                 {provided.placeholder}
             </div>
