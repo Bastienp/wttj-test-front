@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
-import CardList from "./CardList";
-import {cardLists} from "./fixtures/cardLists";
+import CardList from "../components/cardList/CardList";
+import {cardLists} from "../fixtures/cardLists";
 import {DragDropContext} from "react-beautiful-dnd";
 import axios from 'axios';
 import Cable from "actioncable";
 
 
-const isDraggableMoved = (destination, source) => {
+const isDraggableMoved = (source, destination) => {
     return (!(destination.droppableId === source.droppableId && destination.index === source.index));
 
+};
+
+const isSameSourceAndDestination = (source, destination) => {
+    return source.droppableId === destination.droppableId
 };
 
 const orderList = (newList, sourceIndex, destinationIndex) => {
@@ -29,6 +33,7 @@ const moveBetweenList = (newSource, newDestination, droppableSource, droppableDe
 };
 
 class App extends Component {
+
     setStateOnUpdate(users) {
         this.setState({
             to_meet: users.filter(user => user.list_id === 1),
@@ -62,6 +67,56 @@ class App extends Component {
             .catch(error => console.log(error));
     }
 
+
+    movingBewteenLists(source, destination, draggableId) {
+        const newLists = moveBetweenList(
+            Array.from(this.state[source.droppableId]),
+            Array.from(this.state[destination.droppableId]),
+            source,
+            destination
+        );
+        this.setState({
+            to_meet: newLists.to_meet,
+            interview: newLists.interview
+        });
+
+        axios.put('http://localhost:3001/users/' + draggableId, {
+            user: {
+                list_id: cardLists.find(cardList => cardList.step === destination.droppableId).id,
+                list_users: newLists[destination.droppableId]
+            }
+        })
+            .then(response => {
+                this.setState({
+                    to_meet: response.data.filter(user => user.list_id === 1),
+                    interview: response.data.filter(user => user.list_id === 2)
+                })
+            })
+            .catch(error => console.log(error))
+    }
+
+    reorderingList(source, destination) {
+        const newCardsList = orderList(
+            Array.from(this.state[source.droppableId]),
+            source.index,
+            destination.index
+        );
+
+        let state = {};
+        if (source.droppableId === 'interview') {
+            state = {interview: newCardsList};
+        }
+        if (source.droppableId === 'to_meet') {
+            state = {to_meet: newCardsList}
+        }
+        const users = newCardsList;
+        axios.put('http://localhost:3001/users_positions', {
+            users
+        });
+
+        this.setState(state)
+    }
+
     state = {
         cardLists: [],
         to_meet: [],
@@ -74,58 +129,19 @@ class App extends Component {
             return;
         }
 
-        if (!isDraggableMoved(destination, source)) {
+        if (!isDraggableMoved(source, destination)) {
             return;
         }
 
-        if (source.droppableId === destination.droppableId) {
-            const newCardsList = orderList(
-                Array.from(this.state[source.droppableId]),
-                source.index,
-                destination.index
-            );
-
-            let state = {};
-            if (source.droppableId === 'interview') {
-                state = {interview: newCardsList };
-            }
-            if (source.droppableId === 'to_meet') {
-                state = {to_meet: newCardsList}
-            }
-            const users = newCardsList;
-            axios.put('http://localhost:3001/users_positions', {
-                users
-            });
-
-            this.setState(state)
+        if (isSameSourceAndDestination(source, destination)) {
+            this.reorderingList(source, destination);
         } else {
-            const newLists = moveBetweenList(
-                Array.from(this.state[source.droppableId]),
-                Array.from(this.state[destination.droppableId]),
-                source,
-                destination
-            );
-            this.setState({
-                to_meet: newLists.to_meet,
-                interview: newLists.interview
-            });
-
-            axios.put('http://localhost:3001/users/' + draggableId, {
-                user: {
-                    list_id: cardLists.find(cardList => cardList.step === destination.droppableId).id,
-                    list_users: newLists[destination.droppableId]
-                }
-            })
-                .then(response => {
-                    this.setState({
-                        to_meet: response.data.filter(user => user.list_id === 1),
-                        interview: response.data.filter(user => user.list_id === 2)
-                    })
-                })
-                .catch(error => console.log(error))
+            this.movingBewteenLists(source, destination, draggableId);
 
         }
     };
+
+
 
     render() {
         return (

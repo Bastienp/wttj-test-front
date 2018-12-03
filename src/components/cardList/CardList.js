@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import Card from "./Card";
+import Card from "../card/Card";
 import './CardList.css';
 import {Droppable} from 'react-beautiful-dnd';
 

@@ -28,7 +28,6 @@ const Card = ({firstname, lastname, job, id, index}) => (
 Card.propTypes = {
     id: PropTypes.number.isRequired,
     firstname: PropTypes.string.isRequired,
-    step: PropTypes.string.isRequired,
 };
 
 export default Card;
