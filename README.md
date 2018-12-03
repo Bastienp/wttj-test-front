@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-##install
+
+**Install**
+
 Launch this react App after the rails server or choose an other port than :3000.
 
 ## Available Scripts
