@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import './App.css';
 import CardList from '../components/cardList/CardList';
-import {cardLists} from '../fixtures/cardLists';
 import {DragDropContext} from 'react-beautiful-dnd';
 import Cable from 'actioncable';
 import {isDraggableMoved, isSameSourceAndDestination, orderList, moveBetweenList} from './dragAndDropUtils'
 import {getUsers, getLists, updateUsersPositions, updateUser} from '../api/api'
 
 class App extends Component {
-
     setStateOnUpdate(users) {
-        this.setState({
-            to_meet: users.filter(user => user.list_id === 1),
-            interview: users.filter(user => user.list_id === 2)
-        })
+        this.state.cardLists.map((cardList) => (
+            this.setState({
+                [cardList.step]: users.filter(user => user.list_id === cardList.id),
+            })
+        ));
     }
     componentWillMount() {
         let cable = Cable.createConsumer('http://localhost:3001/cable');
@@ -27,15 +26,18 @@ class App extends Component {
     }
 
     componentDidMount() {
-        getUsers().then(response => {
-            this.setStateOnUpdate(response.data)
-        })
-            .catch(error => console.log(error));
-
         getLists().then(response => {
+            response.data.map((list) => (
+                this.state[list.step] = []
+            ));
             this.setState({
                 cardLists: response.data
+            });
+
+            getUsers().then(response => {
+                this.setStateOnUpdate(response.data)
             })
+                .catch(error => console.log(error));
         })
             .catch(error => console.log(error));
     }
@@ -48,18 +50,17 @@ class App extends Component {
             source,
             destination
         );
-        this.setState({
-            to_meet: newLists.to_meet,
-            interview: newLists.interview
-        });
-        const list_id = cardLists.find(cardList => cardList.step === destination.droppableId).id;
+        this.state.cardLists.map((cardList) => (
+            this.setState({
+                [cardList.step]: newLists[cardList.step],
+            })
+        ));
+
+        const list_id = this.state.cardLists.find(cardList => cardList.step === destination.droppableId).id;
         const list_users = newLists[destination.droppableId];
 
         updateUser(draggableId, list_id, list_users).then(response => {
-            this.setState({
-                to_meet: response.data.filter(user => user.list_id === 1),
-                interview: response.data.filter(user => user.list_id === 2)
-            })
+            this.setStateOnUpdate(response.data)
         })
             .catch(error => console.log(error))
     }
@@ -70,23 +71,14 @@ class App extends Component {
             source.index,
             destination.index
         );
-
-        let state = {};
-        if (source.droppableId === 'interview') {
-            state = {interview: newCardsList};
-        }
-        if (source.droppableId === 'to_meet') {
-            state = {to_meet: newCardsList}
-        }
+        this.setState({
+            [source.droppableId]: newCardsList,
+        });
         updateUsersPositions(newCardsList);
-
-        this.setState(state)
     }
 
     state = {
         cardLists: [],
-        to_meet: [],
-        interview: [],
     };
 
     onDragEnd = result => {
