@@ -5,32 +5,7 @@ import {cardLists} from "../fixtures/cardLists";
 import {DragDropContext} from "react-beautiful-dnd";
 import axios from 'axios';
 import Cable from "actioncable";
-
-
-const isDraggableMoved = (source, destination) => {
-    return (!(destination.droppableId === source.droppableId && destination.index === source.index));
-
-};
-
-const isSameSourceAndDestination = (source, destination) => {
-    return source.droppableId === destination.droppableId
-};
-
-const orderList = (newList, sourceIndex, destinationIndex) => {
-    const [cardMoving] = newList.splice(sourceIndex, 1);
-    newList.splice(destinationIndex, 0, cardMoving);
-    return newList
-};
-
-const moveBetweenList = (newSource, newDestination, droppableSource, droppableDestination) => {
-    const [cardMoving] = newSource.splice(droppableSource.index, 1);
-    newDestination.splice(droppableDestination.index, 0, cardMoving);
-    const newLists = {};
-    newLists[droppableSource.droppableId] = newSource;
-    newLists[droppableDestination.droppableId] = newDestination;
-
-    return newLists;
-};
+import {isDraggableMoved, isSameSourceAndDestination, orderList, moveBetweenList} from './dragAndDropUtils'
 
 class App extends Component {
 
