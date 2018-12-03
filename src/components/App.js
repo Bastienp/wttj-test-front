@@ -15,7 +15,7 @@ class App extends Component {
         ));
     }
     componentWillMount() {
-        let cable = Cable.createConsumer('http://localhost:3001/cable');
+        let cable = Cable.createConsumer('http://localhost:3000/cable');
 
         cable.subscriptions.create({channel: "BoardsChannel"}, {
             connect: () => { },
@@ -50,14 +50,13 @@ class App extends Component {
             source,
             destination
         );
-        this.state.cardLists.map((cardList) => (
+        newLists.map((cardList) => (
             this.setState({
-                [cardList.step]: newLists[cardList.step],
+                [cardList.step]: cardList.users,
             })
         ));
-
         const list_id = this.state.cardLists.find(cardList => cardList.step === destination.droppableId).id;
-        const list_users = newLists[destination.droppableId];
+        const list_users = newLists.find(list => list.step === destination.droppableId).users;
 
         updateUser(draggableId, list_id, list_users).then(response => {
             this.setStateOnUpdate(response.data)

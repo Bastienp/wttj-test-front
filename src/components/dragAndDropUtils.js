@@ -16,9 +16,9 @@ export const orderList = (newList, sourceIndex, destinationIndex) => {
 export const moveBetweenList = (newSource, newDestination, droppableSource, droppableDestination) => {
     const [cardMoving] = newSource.splice(droppableSource.index, 1);
     newDestination.splice(droppableDestination.index, 0, cardMoving);
-    const newLists = {};
-    newLists[droppableSource.droppableId] = newSource;
-    newLists[droppableDestination.droppableId] = newDestination;
+    const newLists = [];
+    newLists.push({step: droppableSource.droppableId, users: newSource});
+    newLists.push({step: droppableDestination.droppableId, users: newDestination});
 
     return newLists;
 };
